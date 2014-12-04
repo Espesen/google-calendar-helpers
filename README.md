@@ -26,34 +26,34 @@ a node module for obtaining access token and refresh token [here](https://github
 
 #### Methods
 
-_calendarClient.getEvents(timeMin, timeMax, callback)_
+__calendarClient.getEvents(timeMin, timeMax, callback)__
 
 Returns a list of events from `timeMin` to `timeMax` (RFC 3339 formatted strings)
 
 NB: Makes multiple requests when necessary (if there are more than one page of events)
 
-_calendarClient.getPastEvents(options, callback)_
-_calendarClient.getFutureEvents(options, callback)_
+__calendarClient.getPastEvents(options, callback)__
+__calendarClient.getFutureEvents(options, callback)__
 
 Returns a list of past or future events, respectively.
 
 Options object (optional) can have property 'dayRange' specifying how many days into
 the past or future to extend the query. Defaults to 30.
 
-_calendarClient.submitNewEvent(event, callback)_
+__calendarClient.submitNewEvent(event, callback)__
 
 Adds new event to calendar. `event` must be a Google
 [event resource object](https://developers.google.com/google-apps/calendar/v3/reference/events#resource)
 
 Callback is called with `error` and `event` which is the newly created event.
 
-_calendarClient.submitModifiedEvent(event, callback)_
+__calendarClient.submitModifiedEvent(event, callback)__
 
 Updates an event. `event` must be an event resource object with property `id` of an existing event.
 
 Callback is called with `error` and `event` which is the modified event as returned by Google.
 
-_calendarClient.deleteEvent(eventId, callback)_
+__calendarClient.deleteEvent(eventId, callback)__
 
 Deletes an event. Argument `eventId` (string) is the id of an existing event.
 

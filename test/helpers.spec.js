@@ -7,7 +7,7 @@ describe('helpers.js', function() {
 
   describe('method generatePastEventsList', function() {
 
-    it('should generate a report of events', function (done) {
+    it('should generate a report of events', function () {
 
       var sampleData = tools.generateSampleData()
         , report = helpers.generatePastEventsReport(sampleData.slice(0, 6))
@@ -23,7 +23,6 @@ describe('helpers.js', function() {
           expect(line.slice(-14)).toMatch(/Sample\sevent\s\d/);
         }
       );
-      done();
     });
 
   });

@@ -1,6 +1,6 @@
 {
   "name": "google-calendar-helpers",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Convenience functions for simple Google Calendar usage",
   "author": "Esa Toivola",
   "repository": "https://github.com/Espesen/google-calendar-helpers",

@@ -6,6 +6,28 @@ function GoogleCalendar(accessToken, clientId, clientSecret, calendarId) {
 
   var calendarClient = new gcal.GoogleCalendar(accessToken);
 
+  var responseHandler = function(options, cb) {
+
+    var includeResult = options.includeResult;
+
+    var parseError = function(error) {
+      if (!error) { return null; }
+      if (error instanceof Error) { return error; }
+      if ("message" in error) { return new Error(error.message); }
+      return error;
+    };
+
+    return function(error, result) {
+      if (!includeResult) {
+        cb(parseError(error));
+      }
+      else {
+        cb(parseError(error), result);
+      }
+    };
+
+  };
+
   var getEvents = function(timeMin, timeMax, cb) {
     // helper function for getPastEvents and getFutureEvents
     var allEvents = []
@@ -60,7 +82,7 @@ function GoogleCalendar(accessToken, clientId, clientSecret, calendarId) {
         return !ready;
       },
       function(err) {
-        cb(err, allEvents);
+        responseHandler({ includeResult: true }, cb)(err, allEvents);
       }
     );
   };
@@ -138,7 +160,8 @@ function GoogleCalendar(accessToken, clientId, clientSecret, calendarId) {
           calendarClient.events.update(calendarId, foundEvent.id, event, {}, cb);
         }
       ],
-      cb);
+      responseHandler({ includeResult: true}, cb)
+    );
   };
 
   this.submitNewEvent = function(event, cb) {
@@ -148,14 +171,7 @@ function GoogleCalendar(accessToken, clientId, clientSecret, calendarId) {
       calendarId,
       event,
       {},
-      function(err, result) {
-        if (err) {
-          cb(new Error(err.message));
-        }
-        else {
-          cb(null, result);
-        }
-      }
+      responseHandler({ includeResult: true }, cb)
     );
   };
 
@@ -164,14 +180,7 @@ function GoogleCalendar(accessToken, clientId, clientSecret, calendarId) {
       calendarId,
       eventId,
       {},
-      function(err, result) {
-        if (err) {
-          cb(new Error(err.message));
-        }
-        else {
-          cb(null);
-        }
-      }
+      responseHandler({}, cb)
     );
   };
 

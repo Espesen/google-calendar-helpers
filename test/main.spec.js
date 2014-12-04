@@ -83,7 +83,7 @@ beforeEach(function(done) {
       }
     ],
     done);
-});
+}, 30000);
 
 describe('getting events', function() {
 
@@ -260,5 +260,61 @@ describe('submitting evens', function() {
   });
 
   afterEach(deleteAllEvents, 15000);
+
+});
+
+describe('all methods', function() {
+
+  it('should return an Error instance in case of error', function(done) {
+
+    var now = new Date()
+      , inTheFuture = new Date(new Date().setDate(now.getDate() + 2))
+      , sampleEvent = { summary: 'foo', start: { date: now }, end: { date: now }};
+
+    // for testing, create a client with bad access token
+    var testClient = new GoogleCalendar('foo', 'bar', 'baz', 'qux');
+
+    var errors = [];
+
+    var logError = function(methodName, cb) {
+      return function(error) {
+        if (error) {
+          errors.push({ method: methodName, error: error });
+        }
+        cb(null);
+      };
+    };
+    async.waterfall([
+        function(cb) {
+          async.eachSeries(
+            [ 'getPastEvents', 'getFutureEvents' ],
+            function(methodName, cb) {
+              testClient[methodName](logError(methodName, cb));
+            },
+            cb);
+        },
+        function(cb) {
+          async.each(
+            [ 'submitNewEvent', 'submitModifiedEvent', 'deleteEvent' ],
+            function(methodName, cb) {
+              testClient[methodName](sampleEvent, logError(methodName, cb));
+            },
+            cb);
+        },
+        function(cb) {
+          testClient.getEvents(now.toISOString(), inTheFuture.toISOString(), logError('getEvents', cb));
+        },
+        function (cb) {
+          expect(errors.length).toBeTruthy();
+          _.each(errors, function(error) {
+            expect(error.error instanceof Error).toBeTruthy();
+            expect(typeof error.error.message).toBe('string');
+          });
+          cb(null);
+        }
+      ],
+      done);
+
+  }, 30000);
 
 });
