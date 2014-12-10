@@ -112,6 +112,10 @@ describe('getting events', function() {
     it('should get past events', function(done) {
       googleCalendar.getPastEvents(expectLength(7, 9, done));
     }, 15000);
+
+    it('should accept argument "endTimePast"', function (done) {
+      googleCalendar.getPastEvents({ endTimePast: true }, expectLength(6, 7, done));
+    }, 15000);
   });
 
   describe('getFutureEvents', function() {

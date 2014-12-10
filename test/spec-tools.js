@@ -28,7 +28,8 @@ module.exports = {
               d.setUTCHours(parseInt(time.slice(0, 2), 10));
               d.setUTCMinutes(parseInt(time.slice(-2), 10));
               startObjects.push({ dateTime: d.toISOString() });
-              d.setUTCHours(parseInt(time.slice(0, 2), 10) + 2);
+              d.setUTCHours(23);
+              d.setUTCMinutes(59);
               endObjects.push({ dateTime: d.toISOString() });
             }
           });

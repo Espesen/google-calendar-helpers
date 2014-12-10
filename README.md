@@ -37,6 +37,12 @@ __calendarClient.getFutureEvents(options, callback)__
 
 Returns a list of past or future events, respectively.
 
+By default, ```getPastEvents``` returns events whose start time is past even if their end time is still in the future.
+You can override by setting ```endTimePast``` to ```true``` in ```options```. Then, only events which have ended, will
+be returned.
+
+All day events which have started today or earlier, will always be returned.
+
 Options object (optional) can have property 'dayRange' specifying how many days into
 the past or future to extend the query. Defaults to 30.
 

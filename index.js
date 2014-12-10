@@ -1,5 +1,6 @@
 var helpers = require('./helpers')
   , async = require('async')
+  , _ = require('underscore')
   , gcal = require('google-calendar');
 
 function GoogleCalendar(accessToken, clientId, clientSecret, calendarId) {
@@ -88,28 +89,54 @@ function GoogleCalendar(accessToken, clientId, clientSecret, calendarId) {
   };
 
   var getPastEvents = function(args, cb) {
-    // fetches past events (start time past)
+    // fetches past events
     // args: (optional)
-    //    { dayRange: defaults to 30 }
+    //    { dayRange: defaults to 30
+    //      endTimePast: boolean - set to true to fetch only events that have ended, e.g. whose end time is in the past
+    //    }
     // cb(error, items (array))
 
-    var dayRange
-      , d
-      , startTime
-      , endTime;
 
     if (typeof args === 'function') {
       cb = args;
       args = {};
     }
 
+    var dayRange
+      , endTimePast
+      , d
+      , startTime
+      , endTime;
+
+    // filters events that are still ongoing if 'endTimePast' flag is set
+    var filterEvents = function(events, cb) {
+
+      var now = new Date().getTime();
+
+      if (!endTimePast) { return cb(null, events); }
+
+      events = _.filter(
+        events,
+        function(event) {
+          if (!event.end || event.end.date) { return true; }    // don't filter all day events
+          return new Date(event.end.dateTime).getTime() < now;  // filter ongoing events
+        }
+      );
+      cb(null,events);
+
+    };
+
     dayRange = args.dayRange || 30;
+    endTimePast = "endTimePast" in args ? args.endTimePast : false;
     d = new Date();
     endTime = d.toISOString();
     d.setUTCDate(d.getUTCDate() - dayRange);
     startTime = d.toISOString();
 
-    getEvents(startTime, endTime, cb);
+    getEvents(startTime, endTime, function(err, events) {
+      if (err) { return cb(err, events); }
+      filterEvents(events, cb);
+    });
 
   };
 
